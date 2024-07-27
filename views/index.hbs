@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestionar Teléfonos</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-100 flex items-center justify-center min-h-screen p-4">
+  <div class="w-full max-w-6xl bg-gray-800 p-8 rounded-lg shadow-lg">
+    <h1 class="text-4xl font-bold mb-8 text-center text-teal-300">{{message}}</h1>
+
+    <!-- Botones para mostrar/ocultar formularios -->
+    <div class="mb-6 flex justify-center space-x-4">
+      <button id="toggle-client-form" class="bg-teal-600 text-white p-3 rounded-lg shadow-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Formulario Cliente</button>
+      <button id="toggle-phone-form" class="bg-teal-600 text-white p-3 rounded-lg shadow-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Formulario Teléfono</button>
+    </div>
+
+    <!-- Formulario combinado de Cliente -->
+    <form action="/views/create-cliente" method="post" class="space-y-6">
+      <!-- Datos del Cliente -->
+      <div id="client-form" class="mb-8 hidden">
+        <fieldset class="border border-gray-700 p-6 rounded-lg bg-gray-900">
+          <legend class="text-2xl font-semibold mb-6 text-teal-300">Datos del Cliente</legend>
+          <div class="grid grid-cols-1 gap-6">
+            <div>
+              <label for="nombre" class="block mb-2 text-sm font-medium text-gray-300">Nombre:</label>
+              <input type="text" id="nombre" name="nombre" required class="w-full p-3 border border-gray-600 rounded-md bg-gray-700 text-gray-100">
+            </div>
+            <div>
+              <label for="email" class="block mb-2 text-sm font-medium text-gray-300">Email:</label>
+              <input type="email" id="email" name="email" required class="w-full p-3 border border-gray-600 rounded-md bg-gray-700 text-gray-100">
+            </div>
+            <div>
+              <label for="direccion" class="block mb-2 text-sm font-medium text-gray-300">Dirección:</label>
+              <input type="text" id="direccion" name="direccion" class="w-full p-3 border border-gray-600 rounded-md bg-gray-700 text-gray-100">
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Botón de Enviar Cliente -->
+      <div class="flex justify-center">
+        <button type="submit" class="bg-teal-700 text-white p-3 rounded-lg shadow-md hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-opacity-50 transition duration-150 ease-in-out">Registrar Cliente</button>
+      </div>
+    </form>
+
+    <!-- Formulario combinado de Teléfono -->
+    <form action="/views/create-telefono" method="post" class="space-y-6 mt-8">
+      <!-- Datos del Teléfono -->
+      <div id="phone-form" class="mb-8 hidden">
+        <fieldset class="border border-gray-700 p-6 rounded-lg bg-gray-900">
+          <legend class="text-2xl font-semibold mb-6 text-teal-300">Datos del Teléfono</legend>
+          <div class="grid grid-cols-1 gap-6">
+            <div>
+              <label for="numero" class="block mb-2 text-sm font-medium text-gray-300">Número:</label>
+              <input type="text" id="numero" name="numero" required class="w-full p-3 border border-gray-600 rounded-md bg-gray-700 text-gray-100">
+            </div>
+            <div>
+              <label for="operador" class="block mb-2 text-sm font-medium text-gray-300">Operador:</label>
+              <input type="text" id="operador" name="operador" required class="w-full p-3 border border-gray-600 rounded-md bg-gray-700 text-gray-100">
+            </div>
+            <div>
+              <label for="modelo" class="block mb-2 text-sm font-medium text-gray-300">Modelo:</label>
+              <input type="text" id="modelo" name="modelo" class="w-full p-3 border border-gray-600 rounded-md bg-gray-700 text-gray-100">
+            </div>
+            <div>
+              <label for="fecha_compra" class="block mb-2 text-sm font-medium text-gray-300">Fecha de Compra:</label>
+              <input type="date" id="fecha_compra" name="fecha_compra" class="w-full p-3 border border-gray-600 rounded-md bg-gray-700 text-gray-100">
+            </div>
+            <div>
+              <label for="clienteId" class="block mb-2 text-sm font-medium text-gray-300">Cliente:</label>
+              <select id="clienteId" name="clienteId" required class="w-full p-3 border border-gray-600 rounded-md bg-gray-700 text-gray-100">
+                <option value="" disabled selected>Seleccione un cliente</option>
+                {{#each clientes}}
+                <option value="{{this.id}}">{{this.nombre}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Botón de Enviar Teléfono -->
+      <div class="flex justify-center">
+        <button type="submit" class="bg-teal-700 text-white p-3 rounded-lg shadow-md hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-opacity-50 transition duration-150 ease-in-out">Registrar Teléfono</button>
+      </div>
+    </form>
+
+    <!-- Lista de Clientes -->
+    <div class="bg-gray-700 p-6 rounded-md shadow-md mt-8">
+      <h2 class="text-xl font-semibold mb-4 text-teal-300">Clientes Registrados</h2>
+      <div class="space-y-4">
+        {{#each clientes}}
+        <div class="bg-gray-800 p-4 border border-gray-600 rounded-md">
+          <h3 class="text-lg font-semibold mb-2 text-teal-300">Nombre: {{this.nombre}}</h3>
+          <p class="text-gray-400">Email: {{this.email}}</p>
+          <p class="text-gray-400">Dirección: {{this.direccion}}</p>
+          <div class="mt-4 flex space-x-2">
+            <form action="/views/delete-cliente/{{this.id}}" method="post" class="inline">
+              <button type="submit" class="bg-red-600 text-white text-sm p-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">Eliminar Cliente</button>
+            </form>
+          </div>
+          <!-- Lista de Teléfonos del Cliente -->
+          <div class="mt-4 space-y-2">
+            <h4 class="text-md font-semibold text-teal-300">Teléfonos:</h4>
+            {{#each this.telefonos}}
+            <div class="bg-gray-800 p-4 border border-gray-600 rounded-md">
+              <p class="text-gray-400">Número: {{this.numero}}</p>
+              <p class="text-gray-400">Operador: {{this.operador}}</p>
+              <p class="text-gray-400">Modelo: {{this.modelo}}</p>
+              <p class="text-gray-400">Fecha de Compra: {{this.fecha_compra}}</p>
+              <div class="mt-2 flex space-x-2">
+                <form action="/views/delete-telefono/{{this.id}}" method="post" class="inline">
+                  <button type="submit" class="bg-red-600 text-white text-sm p-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">Eliminar Teléfono</button>
+                </form>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('toggle-client-form').addEventListener('click', function() {
+      const clientForm = document.getElementById('client-form');
+      clientForm.classList.toggle('hidden');
+    });
+
+    document.getElementById('toggle-phone-form').addEventListener('click', function() {
+      const phoneForm = document.getElementById('phone-form');
+      phoneForm.classList.toggle('hidden');
+    });
+  </script>
+</body>
+</html>
